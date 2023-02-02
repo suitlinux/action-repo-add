@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     container: docker://archlinux:base
     permissions:
-      contents: write 
+      contents: write
     steps:
       - name: install tools
         shell: bash
