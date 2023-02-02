@@ -1,12 +1,36 @@
 name: 'test'
 
 on:
-  push:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: 'where to look for a release'
+        required: true
+        default: manjaro-sway/manjaro-sway-settings-git
+      release: 
+        description: 'release to download'
+        required: true
+        default: r1841.a635ef1c-2
+      branch:
+        description: 'manjaro lifecycle branch'
+        default: 'testing'
+        type: choice
+        options:
+        - stable
+        - testing
+        - unstable
+  push:      
     branches:
       - main
 
+env:
+  repository: ${{ inputs.repository || 'manjaro-sway/manjaro-sway-settings-git' }}
+  release: ${{ inputs.release || 'r1841.a635ef1c-2' }}
+  branch: ${{ inputs.branch || 'testing' }}
+
 jobs:
   repo-add:
+    name: add  ${{ inputs.repository || 'manjaro-sway/manjaro-sway-settings-git' }}@${{ inputs.release || 'r1841.a635ef1c-2' }} to ${{ inputs.branch || 'testing' }}
     runs-on: ubuntu-latest
     container: docker://archlinux:base
     permissions:
@@ -23,8 +47,6 @@ jobs:
       - id: repo-add
         uses: ./
         with:
-          repository: manjaro-sway/manjaro-sway-settings-git
-          release: r1841.a635ef1c-2
-          branch: testing
-          gpg_keyid: ${{ secrets.gpg_keyid }}
-          gpg_secret_base64: ${{ secrets.gpg_secret_base64 }}
+          repository: ${{ env.repository }}
+          release: ${{ env.release }}
+          branch: ${{ env.branch }}

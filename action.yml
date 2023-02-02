@@ -15,10 +15,10 @@ inputs:
     required: true
   gpg_secret_base64:
     description: 'base64 encoded key used to sign the database with'
-    required: true
+    required: false
   token:
     description: 'github token used to commit changes'
-    required: true
+    required: false
 
 runs:
   using: "composite"
