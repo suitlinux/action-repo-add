@@ -1,0 +1,85 @@
+name: 'repo add'
+description: 'downloads github release assets and checks them in'
+inputs:
+  repository:
+    description: 'repository to search for a release in'
+    required: true
+  release:
+    description: 'release id to download'
+    required: true
+  branch:
+    description: 'manjaro lifecycle (unstable/testing/stable)'
+    required: true
+  gpg_keyid:
+    description: 'id of the key used to sign the database with'
+    required: true
+  gpg_secret_base64:
+    description: 'base64 encoded key used to sign the database with'
+    required: true
+  token:
+    description: 'github token used to commit changes'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: check tools are installed
+      shell: bash
+      run: |
+        command -v git
+        command -v git-lfs
+        command -v gh
+        command -v repo-add
+    - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+      with:
+        fetch-depth: 1
+        lfs: true
+        path: 'repo'
+        ref: 'main'
+    - name: set workdir
+      shell: bash
+      run: echo "WORKDIR=/__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}/repo" >>$GITHUB_ENV
+    - name: setup git
+      shell: bash
+      working-directory: ${{ env.WORKDIR }}
+      run: |
+        ls -lh
+        echo $PWD
+        git config user.name repo-add-bot
+        git config user.email info@manjaro.download
+    - name: setup gpg
+      shell: bash
+      working-directory: ${{ env.WORKDIR }}
+      if: ${{ inputs.gpg_keyid != '' && inputs.gpg_secret_base64 != '' }}
+      run: |
+        # import signing key (no passphrase)
+        cat <(echo -e "${{ inputs.gpg_secret_base64 }}" | base64 --decode) | gpg --batch --import
+        pacman-key --keyserver keyserver.ubuntu.com --recv-keys ${{ inputs.gpg_keyid }}
+        pacman-key --lsign-key ${{ inputs.gpg_keyid }}
+    - name: download the package to be added to the repo
+      shell: bash
+      working-directory: ${{ env.WORKDIR }}
+      id: download_release
+      run: |
+        echo ${{ github.token }} | gh auth login --with-token
+        gh release download ${{ inputs.release }} --repo ${{ inputs.repository }} -D /tmp/
+        ls -lh /tmp/*.zst*
+    - name: copy new files into place
+      shell: bash
+      working-directory: ${{ env.WORKDIR }}
+      run: |
+        for arch in x86_64 aarch64; do
+          repo_dir=docs/${{ inputs.branch }}/$arch
+          mkdir -p $repo_dir
+          cp -f /tmp/*-${arch}* $repo_dir || echo "no ${arch} files found"
+          cp -f /tmp/*-any* $repo_dir || echo "no any files found"
+
+          repo-add --sign --new --remove --prevent-downgrade $repo_dir/manjaro-sway.db.tar.gz $repo_dir/*.zst
+
+          rm -f docs/**/*.old* || echo 'no .old files found'
+        done
+
+        git add docs/**/*
+        git commit -m "chore: update ${{ inputs.repository }} (${{ inputs.branch }} ${{ inputs.release }})"
+        git push
+          

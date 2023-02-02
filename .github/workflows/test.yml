@@ -1,0 +1,30 @@
+name: 'test'
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  repo-add:
+    runs-on: ubuntu-latest
+    container: docker://archlinux:base
+    permissions:
+      contents: write 
+    steps:
+      - name: install tools
+        shell: bash
+        run: |
+          pacman -Sy --noconfirm --needed git git-lfs github-cli
+      # needed only to fetch the action.yml
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+        with:
+          fetch-depth: 1
+      - id: repo-add
+        uses: ./
+        with:
+          repository: manjaro-sway/manjaro-sway-settings-git
+          release: r1841.a635ef1c-2
+          branch: testing
+          gpg_keyid: ${{ secrets.gpg_keyid }}
+          gpg_secret_base64: ${{ secrets.gpg_secret_base64 }}
