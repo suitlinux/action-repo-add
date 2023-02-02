@@ -57,6 +57,7 @@ runs:
       run: |
         # import signing key (no passphrase)
         cat <(echo -e "${{ inputs.gpg_secret_base64 }}" | base64 --decode) | gpg --batch --import
+        pacman-key --init
         pacman-key --keyserver keyserver.ubuntu.com --recv-keys ${{ inputs.gpg_keyid }}
         pacman-key --lsign-key ${{ inputs.gpg_keyid }}
     - name: download the package to be added to the repo
@@ -78,9 +79,9 @@ runs:
           cp -f /tmp/*-any* $repo_dir || echo "no any files found"
 
           repo-add --sign --new --remove --prevent-downgrade $repo_dir/${{ github.event.repository.name }}.db.tar.gz $repo_dir/*.zst || echo "no files found for $arch"
-
-          rm -f docs/**/*.old* || echo 'no .old files found'
         done
+
+        rm -f docs/**/*.old* || echo 'no .old files found'
 
         if [[ `git status --porcelain` ]]; then
           git status --porcelain
