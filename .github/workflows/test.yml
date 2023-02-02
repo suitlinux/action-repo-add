@@ -23,13 +23,20 @@ on:
     branches:
       - main
 
+## fallbacks only needed for push-events
 env:
   repository: ${{ inputs.repository || 'manjaro-sway/manjaro-sway-settings-git' }}
   release: ${{ inputs.release || 'r1841.a635ef1c-2' }}
   branch: ${{ inputs.branch || 'testing' }}
 
+concurrency:
+  ## fallbacks only needed for push-events
+  group: ${{ inputs.repository || 'manjaro-sway/manjaro-sway-settings-git' }}-${{ inputs.branch || 'testing' }}
+  cancel-in-progress: true
+
 jobs:
   repo-add:
+    ## fallbacks only needed for push-events
     name: add  ${{ inputs.repository || 'manjaro-sway/manjaro-sway-settings-git' }}@${{ inputs.release || 'r1841.a635ef1c-2' }} to ${{ inputs.branch || 'testing' }}
     runs-on: ubuntu-latest
     container: docker://archlinux:base
