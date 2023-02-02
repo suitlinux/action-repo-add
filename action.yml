@@ -30,7 +30,12 @@ runs:
         command -v git-lfs
         command -v gh
         command -v repo-add
-    - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+    - name: wait
+      uses: softprops/turnstyle@ca99add00ff0c9cbc697d22631d2992f377e5bd5
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    - name: checkout
+      uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
       with:
         fetch-depth: 1
         lfs: true
@@ -80,6 +85,6 @@ runs:
         done
 
         git add docs/**/*
-        git commit -m "chore: update ${{ inputs.branch }}/${{ inputs.repository }}@${{ inputs.release }}"
+        git commit -m "chore: added to ${{ inputs.branch }}: ${{ inputs.repository }}@${{ inputs.release }}"
         git push
           
