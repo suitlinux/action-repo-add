@@ -80,6 +80,6 @@ runs:
         done
 
         git add docs/**/*
-        git commit -m "chore: update ${{ inputs.repository }} (${{ inputs.branch }} ${{ inputs.release }})"
+        git commit -m "chore: update ${{ inputs.branch }}/${{ inputs.repository }}@${{ inputs.release }}"
         git push
           
