@@ -1,6 +1,9 @@
 name: 'repo add'
 description: 'downloads github release assets and checks them in'
 inputs:
+  name:
+    description: 'name of the repository to create'
+    required: false
   repository:
     description: 'repository to search for a release in'
     required: true
@@ -78,7 +81,7 @@ runs:
           cp -f /tmp/*-${arch}* $repo_dir || echo "no ${arch} files found"
           cp -f /tmp/*-any* $repo_dir || echo "no any files found"
 
-          repo-add --sign --new --remove --prevent-downgrade $repo_dir/${{ github.event.repository.name }}.db.tar.gz $repo_dir/*.zst || echo "no files found for $arch"
+          repo-add --sign --new --remove --prevent-downgrade $repo_dir/${{ inputs.name || github.event.repository.name }}.db.tar.gz $repo_dir/*.zst || echo "no files found for $arch"
         done
 
         rm -f docs/**/*.old* || echo 'no .old files found'
