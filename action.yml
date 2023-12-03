@@ -85,7 +85,7 @@ runs:
             db_path="$repo_dir/${{ inputs.name || github.event.repository.name }}.db.tar.gz"
             files_path="$repo_dir/${{ inputs.name || github.event.repository.name }}.files.tar.gz"
             rm -f $db_path $files_path
-            repo-add --sign --new --remove --prevent-downgrade $repo_dir/${{ inputs.name || github.event.repository.name }}.db.tar.gz $repo_dir/*.zst || echo "no files found for $arch"
+            repo-add --new --remove --prevent-downgrade $repo_dir/${{ inputs.name || github.event.repository.name }}.db.tar.gz $repo_dir/*.zst || echo "no files found for $arch"
           fi
         done
 
