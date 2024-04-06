@@ -22,6 +22,10 @@ inputs:
   token:
     description: 'github token used to commit changes'
     required: false
+  lfs:
+    description: enable lfs support
+    required: false
+    default: false
 
 runs:
   using: "composite"
@@ -41,7 +45,7 @@ runs:
       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
       with:
         fetch-depth: 1
-        lfs: false
+        lfs: ${{ inputs.lfs }}
         path: 'repo'
         ref: ${{ github.event.repository.default_branch }}
     - name: set workdir
