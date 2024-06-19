@@ -38,7 +38,7 @@ runs:
         command -v gh
         command -v repo-add
     - name: wait
-      uses: softprops/turnstyle@ede6f489d19ebb32a0f39563dc6edb515e1bf410
+      uses: softprops/turnstyle@df7e268dbe0e1679f008b42189f35c0b2d6cf34f
       env:
         GITHUB_TOKEN: ${{ github.token }}
     - name: checkout
