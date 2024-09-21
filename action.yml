@@ -96,6 +96,7 @@ runs:
         rm -f docs/**/*.old* || echo 'no .old files found'
 
         if [[ `git status --porcelain` ]]; then
+          git config http.version HTTP/1.1
           git add docs/**/*
           git status --porcelain
           git commit -m "chore: added to ${{ inputs.branch }}: ${{ inputs.repository }}@${{ inputs.release }}"
