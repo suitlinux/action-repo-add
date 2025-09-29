@@ -94,6 +94,11 @@ runs:
         done
 
         rm -f **/*.old* || echo 'no .old files found'
+        rm -f **/.db || echo 'no .db files found'
+        rm -f **/.files || echo 'no .files files found'
+
+        cp $repo_dir/${{ inputs.name || github.event.repository.name }}.db.tar.gz $repo_dir/${{ inputs.name || github.event.repository.name }}.db
+        cp $repo_dir/${{ inputs.name || github.event.repository.name }}.files.tar.gz $repo_dir/${{ inputs.name || github.event.repository.name }}.files
 
         if [[ `git status --porcelain` ]]; then
           git config http.version HTTP/1.1
