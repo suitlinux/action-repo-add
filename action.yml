@@ -93,8 +93,8 @@ runs:
             repo-add --new --remove --prevent-downgrade $repo_dir/${{ inputs.name || github.event.repository.name }}.db.tar.gz $repo_dir/*.zst || echo "no files found for $arch"
           fi
 
-          cp -f $repo_dir/${{ inputs.name || github.event.repository.name }}.db.tar.gz $repo_dir/${{ inputs.name || github.event.repository.name }}.db
-          cp -f $repo_dir/${{ inputs.name || github.event.repository.name }}.files.tar.gz $repo_dir/${{ inputs.name || github.event.repository.name }}.files
+          cp $repo_dir/${{ inputs.name || github.event.repository.name }}.db.tar.gz $repo_dir/${{ inputs.name || github.event.repository.name }}.db
+          cp $repo_dir/${{ inputs.name || github.event.repository.name }}.files.tar.gz $repo_dir/${{ inputs.name || github.event.repository.name }}.files
         done
 
         rm -f **/*.old* || echo 'no .old files found'
